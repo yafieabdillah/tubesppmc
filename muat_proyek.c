@@ -11,7 +11,7 @@ void cekmode(int n){
     return n;
 }
 
-void tampilkanlayout(char tabs[][40][3], int panjang, int lebar){
+void tampilkanlayout(char tabs[][40][4], int panjang, int lebar){
     int i,j;
 
     for (i=1; i<=panjang; i++){
@@ -27,12 +27,29 @@ void tampilkanlayout(char tabs[][40][3], int panjang, int lebar){
     }
 }
 
+void tampilkanrouting(char tabs[][40], int panjang, int lebar){
+    int i, j;
+
+    for (i=1; i<=panjang; i++){
+        printf("\t %d", i);
+    }
+    printf("\n");
+    for (i=1; i<=lebar;i++){
+        printf("%d", i);
+        for (j=1; j<=panjang; j++){
+            printf("\t %c", tabs[i][j]);
+        }
+        printf("\n");
+    }
+}
+
 int main(){
     FILE *file1;
     FILE *file2;
     char namafile[100],flayout[100],frouting[100];
-    int panjang, lebar, mode, i, j, k, c, d,length;
-    char tabs[40][40][3];
+    int panjang, lebar, mode, i, j, k, c, d, count, hitung;
+    char tabslay[40][40][4];
+    char tabsrout[40][40];
     char a[100];
     char data[50];
 
@@ -61,16 +78,19 @@ int main(){
 
     printf("\n");
 
+    //memasukkan isi file layout ke array layout
     i=1;
     j=1;
     k=0;
-    while(1){
+    count=0;
+    while(file1){
         c = fgetc(file1);
         d=c;
         switch (d){
             case ',':
                 k=0;
                 j=j+1;
+                count=count+1;
                 break;
             case '\n':
                 k=0;
@@ -79,66 +99,101 @@ int main(){
                 printf("\n");
                 break;
             case ' ':
-                tabs[i][j][1]=d;
-                printf("%c", tabs[i][j][1]);
+                tabslay[i][j][1]=d;
+                printf("/", tabslay[i][j][1]);
+                strcpy(tabslay[i][j], "  ");
                 break;
-            case 'R' :
-                tabs[i][j][k]=d;
-                printf("%c", tabs[i][j][k]);
+            case 'R':
+            case 'J':
+            case 'T':
+            case 'C':
+                tabslay[i][j][k]=d;
+                printf("%c", tabslay[i][j][k]);
+                k=k+1;
+                break;
+            case '0' :
+            case '1' :
+            case '2' :
+            case '3' :
+            case '4' :
+            case '5' :
+            case '6' :
+            case '7' :
+            case '8' :
+            case '9' :
+                tabslay[i][j][k]=d;
+                printf("%c", tabslay[i][j][k]);
                 k=k+1;
                 break;
             default :
-                tabs[i][j][k]=d;
-                printf("%c", tabs[i][j][k]);
-                printf("lain");
-                //printf("%s", tabs[i][j]);
-                break;
+                printf("/%d/", d);
         }
         if(feof(file1)){
             break;
         }
     }
-    printf("%s", tabs[1][1]);
-    printf("i=%d, j=%d \n", i,j);
 
-    /*c=1;
-    while(fgets(data,50,file1)!=NULL) //membaca dan mengulang sampai data habis
-    {
-        printf("Data ke-%d : %s", c, data);
-        length=strlen(data);
-        printf("%d", length);
-        for(d=0;d<=(length-1);d++){
-            switch (data[d]){
-                case ',':
-                    k=1;
-                    j=j+1;
+    //cobacoba
+    printf("//%s// \n", tabslay[1][2]);
+    printf("i=%d, j=%d \n", i,count);
+    lebar = i-1;
+    panjang=((count/lebar)+1);
+    printf("panjang %d \n", panjang);
+
+    //memasukkan isi file layout ke array routing
+    i=1;
+    j=1;
+    hitung=0;
+    while(file2){
+        c = fgetc(file2);
+        printf("masuk\n");
+        d=c;
+        switch (d){
+            case ',':
+                hitung=hitung+1;
+                printf("koma");
                 break;
-                case '\n':
-                    k=1;
-                    j=1;
-                    i=i+1;
-                    printf("\n");
-                    break;
-                case ' ':
-                    strcpy(tabs[i][j], data[d]);
-                    printf("%s", tabs[i][j]);
-                    break;
-                case 'R' :
-                    tabs[i][j][1]=data[d];
-                    printf("%c", tabs[i][j][1]);
-                    k=k+1;
-                    break;
-                default :
-                    tabs[i][j][2]=data[d];
-                    printf("%s", tabs[i][j]);
-                    break;
-            }
-            d=d+1;
+            case '\n':
+                j=1;
+                i=i+1;
+                printf("enter\n");
+                break;
+            case ' ':
+                tabsrout[i][j]=d;
+                printf("%c", tabsrout[i][j]);
+                printf("kosong");
+                break;
+            case '!':
+            case '@':
+            case '#':
+            case '$':
+            case '%':
+            case '^':
+            case '&':
+            case '*':
+            case '(':
+            case ')':
+                tabsrout[i][j]=d;
+                printf("%c", tabsrout[i][j]);
+                printf("isi");
+                j=j+1;
+            default :
+                printf("/%c/ \n", d);
         }
-        c++;
+        if(feof(file2)){
+            break;
+        }
     }
-    fclose(file1);*/
 
+    //cobacoba
+   /* printf("//%c// \n", tabsrout[1][2]);
+    printf("i=%d, j=%d \n", i,hitung);
+    lebar = i-1;
+    panjang=((hitung/lebar)+1);
+    printf("panjang %d", panjang);*/
+
+
+    //Menu utama
     printf("[Menu Utama]\n");
     printf("Pilih Mode: \n\t1. Tampilkan Layout \n\t2. Layouting Manual \n\t3. Tampilkan Routing \n\t4. Routing Manual");
     printf("\n\t5. Layout Otomatis \n\t6. Routing Otomatis \n\t7. Design Rule Checker \n\t8. Simpan Proyek dan Keluar\n");
@@ -150,7 +205,10 @@ int main(){
     while ((mode<=7)&&(mode>=1)){
         switch(mode){
             case 1 :
-                tampilkanlayout(tabs, panjang, lebar);
+                tampilkanlayout(tabslay, panjang, lebar);
+                break;
+            case 2 :
+                tampilkanrouting(tabsrout, panjang, lebar);
                 break;
             default :
                 printf("ups salah\n");
